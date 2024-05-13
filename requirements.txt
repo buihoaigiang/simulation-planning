@@ -36,6 +36,7 @@ stack-data==0.6.3
 tenacity==8.2.3
 tornado==6.4
 traitlets==5.14.1
+streamlit
 tzdata==2023.4
 wcwidth==0.2.13
 matplotlib==3.8.2
