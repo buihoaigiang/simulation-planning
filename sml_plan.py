@@ -15,9 +15,9 @@ st.set_page_config(
 with st.sidebar:
     start_date = st.date_input('Enter the FROM DATE: ', date.today() + timedelta(days=1))
     end_date = st.date_input('Enter the TO DATE: ', date.today() + timedelta(days=90))
-    daily_spend = st.number_input('Enter the daily SPEND ($): ')
-    cpi = st.number_input('Enter the daily CPI ($): ', )
-    price = st.number_input('Enter the daily PRICE ($): ')
+    daily_spend = st.number_input('Enter the daily SPEND ($): ', value= 15000, step=1000)
+    cpi = st.number_input('Enter the daily CPI ($): ',  value= 1.6, step=0.2 )
+    price = st.number_input('Enter the daily PRICE ($): ', value= 6.99, step= 0.5 )
     st.selectbox('Select SUBSCRIPTION TYPE', ["WEEKLY", "YEARLY"])
 
     st.markdown("<h1 style='text-align: left; font-size: 16px;'>Enter Retention Rates: </h1>", unsafe_allow_html=True)
@@ -143,15 +143,28 @@ col4.metric("Total User Acquisition: ", f"{total_spend_to_profit/cpi:,.0f}")
 
 # chart
 fig, ax = plt.subplots(figsize = (25,10))
-plt.title ("Spend, revenue simulation")
+plt.style.use('ggplot') 
 
+plt.title ("Spend, revenue simulation")
 sns.barplot(x = 'Date',
             y = 'values',
             hue = 'type_group',
-            data = df_to_plot)
+            data = df_to_plot[df_to_plot.type_group == "renew"],
+            ax = ax)
+
+ax.axhline(
+    y=daily_spend, 
+    color='red',  
+    linestyle='dashed',  
+    linewidth=2  
+)
+
 plt.xticks(rotation=90)
 plt.xlabel("Date")
 plt.ylabel("Revenue - Spend ($)")
+plt.tight_layout()
+
+
 
 tab1, tab2 = st.tabs(["📈 Chart", "🗃 Data"])
 tab1.subheader("Spend, revenue simulation")
