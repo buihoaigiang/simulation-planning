@@ -1,15 +1,9 @@
-# import streamlit as st
-# import matplotlib.pyplot as plt
-# import pandas as pd
-# import numpy as np
-# import seaborn as sns
-# from datetime import date, timedelta
-streamlit
-matplotlib
-pandas
-numpy
-seaborn
-datetime
+import streamlit as st
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from datetime import date, timedelta
 
 st.set_page_config(
     page_title="Ex-stream-ly Cool App",
