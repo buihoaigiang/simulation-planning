@@ -154,7 +154,7 @@ sns.barplot(x = 'Date',
 
 ax.axhline(
     y=daily_spend, 
-    color='red',  
+    color='g',  
     linestyle='dashed',  
     linewidth=2  
 )
