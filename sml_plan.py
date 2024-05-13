@@ -15,9 +15,9 @@ st.set_page_config(
 with st.sidebar:
     start_date = st.date_input('Enter the FROM DATE: ', date.today() + timedelta(days=1))
     end_date = st.date_input('Enter the TO DATE: ', date.today() + timedelta(days=90))
-    daily_spend = st.number_input('Enter the daily SPEND ($): ', 30000)
-    cpi = st.number_input('Enter the daily CPI ($): ', 1.8)
-    price = st.number_input('Enter the daily PRICE ($): ', 6.99)
+    daily_spend = st.number_input('Enter the daily SPEND ($): ')
+    cpi = st.number_input('Enter the daily CPI ($): ', )
+    price = st.number_input('Enter the daily PRICE ($): ')
     st.selectbox('Select SUBSCRIPTION TYPE', ["WEEKLY", "YEARLY"])
 
     st.markdown("<h1 style='text-align: left; font-size: 16px;'>Enter Retention Rates: </h1>", unsafe_allow_html=True)
@@ -105,7 +105,7 @@ def create_combined_dataframe(df):
     df_renew["type"] = f"renew{type_suffix}"
 
     df_renew["num"] = df[remaining_col]
-    df_renew["values"] = df[remaining_col] * 7  
+    df_renew["values"] = df[remaining_col] * price  
 
     # Append renewal data
     df_to_calculate = pd.concat([df_to_calculate, df_renew], ignore_index=True)
@@ -158,3 +158,4 @@ tab1.subheader("Spend, revenue simulation")
 tab1.pyplot(fig)
 tab2.subheader("Data simulation")
 tab2.write(df_to_calculate)
+
