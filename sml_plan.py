@@ -152,6 +152,8 @@ col2.metric("Negative Earnings Period: ", f"{negative_earnings_period} Days")
 col3.metric("Money to burn: ", f"${total_spend_to_profit:,.0f}")
 col4.metric("Total User Acquisition: ", f"{total_spend_to_profit/cpi:,.0f}")
 
+st.markdown("### Nếu không ra kết quả thì có nghĩa là trong khoảng thời gian này + với các chỉ số input pj không hòa vốn! :white_frowning_face:")
+
 # chart
 fig, ax = plt.subplots(figsize = (25,10))
 plt.style.use('ggplot') 
