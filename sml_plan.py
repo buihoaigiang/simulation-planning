@@ -37,7 +37,7 @@ with st.sidebar:
 #input rr
     dfrr = pd.DataFrame(
         [
-            {"Renewal times": "1",  "Rate": 0.053},
+            {"Renewal times": "1 - PR Act",  "Rate": 0.053},
             {"Renewal times": "2",  "Rate": 0.043},
             {"Renewal times": "3",  "Rate": 0.036},
             {"Renewal times": "4",  "Rate": 0.026},
