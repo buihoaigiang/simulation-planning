@@ -5,13 +5,26 @@ import numpy as np
 import seaborn as sns
 from datetime import date, timedelta
 
+# Set page infor ....
 st.set_page_config(
-    page_title="Ex-stream-ly Cool App",
+    page_title="Hoai - Ex-stream-ly Cool App",
     page_icon="🧊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+#background color
+page_bg_color = "#fffff0"  
+page_bg_img = f"""
+<style>
+[data-testid="stAppViewContainer"] > .main {{
+    background-color: {page_bg_color};
+}}
+</style>
+"""
+st.markdown(page_bg_img, unsafe_allow_html=True)
 
+# Set sidebar input....
+#input date range, spend, cpi...
 with st.sidebar:
     start_date = st.date_input('Enter the FROM DATE: ', date.today() + timedelta(days=1))
     end_date = st.date_input('Enter the TO DATE: ', date.today() + timedelta(days=90))
@@ -21,7 +34,7 @@ with st.sidebar:
     st.selectbox('Select SUBSCRIPTION TYPE', ["WEEKLY", "YEARLY"])
 
     st.markdown("<h1 style='text-align: left; font-size: 16px;'>Enter Retention Rates: </h1>", unsafe_allow_html=True)
-
+#input rr
     dfrr = pd.DataFrame(
         [
             {"Renewal times": "1",  "Rate": 0.053},
@@ -42,7 +55,8 @@ with st.sidebar:
 
     if 'edited_df' not in st.session_state:
         st.session_state.edited_df = dfrr.copy()
-
+        
+#Calculate install
 def define_date(start_date, end_date, daily_spend, cpi, price):
     date_range = pd.date_range(start=start_date, end=end_date)
     df = pd.DataFrame(date_range, columns=['Date'])
@@ -53,6 +67,7 @@ def define_date(start_date, end_date, daily_spend, cpi, price):
     df["price"] = price
     return df
 
+#Process rr
 def define_renew(df, *retention_rates):
     for i, rr in enumerate(retention_rates, start=1):
         df[f"rr{i}"] = rr
@@ -65,23 +80,20 @@ retention_rates = edited_df.iloc[:, 1].tolist()
 df = define_date(start_date, end_date, daily_spend, cpi, price)
 define_renew(df, *retention_rates)
 
+#Creat data frame
 def create_combined_dataframe(df):
 
-  # Define columns
   columns = ["Date", "install_date", "type", "num", "values"]
   
-  # Create empty DataFrames for installations and spend
   df_install = pd.DataFrame(columns=columns)
   df_spend = pd.DataFrame(columns=columns)
 
-  # Populate install data
   df_install["Date"] = df["Date"]
   df_install["install_date"] = df["install_date"]
   df_install["type"] = "install"
   df_install["num"] = df["num_install"]
   df_install["values"] = 0
 
-  # Populate spend data
   df_spend["Date"] = df["Date"]
   df_spend["install_date"] = df["install_date"]
   df_spend["type"] = "spend"
@@ -91,11 +103,11 @@ def create_combined_dataframe(df):
   # Combine
   df_to_calculate = pd.concat([df_install, df_spend], ignore_index=True)
 
-  # Get renew and remaining user columns
+  # Renew and remaining user 
   renew_at_columns = [col for col in df.columns if col.startswith("renew_") and col.endswith("_at")]
   remaining_user_columns = [col for col in df.columns if col.startswith("remaining_user_")]
 
-  # Iterate and process renewals
+  # Process renewals
   for renew_col, remaining_col in zip(renew_at_columns, remaining_user_columns):
     df_renew = pd.DataFrame(columns=columns)
     df_renew["Date"] = df[renew_col]
@@ -107,11 +119,12 @@ def create_combined_dataframe(df):
     df_renew["num"] = df[remaining_col]
     df_renew["values"] = df[remaining_col] * price  
 
-    # Append renewal data
+    # Append 
     df_to_calculate = pd.concat([df_to_calculate, df_renew], ignore_index=True)
 
   return df_to_calculate
 
+#Process final df 
 df_to_calculate = create_combined_dataframe(df)
 
 def remove_digits(text):
@@ -120,8 +133,6 @@ df_to_calculate['type_group'] = df_to_calculate['type'].apply(remove_digits)
 df_to_calculate["Date"] =pd.to_datetime(df_to_calculate["Date"])
 df_to_plot = df_to_calculate[df_to_calculate.type_group != "install"] 
 df_to_plot = df_to_plot.groupby(["Date","type_group"])["values"].sum().reset_index()
-
-# df_to_plot
 
 #calculate when break - even
 df_filtered = df_to_plot[df_to_plot['type_group'] == 'renew']
@@ -148,27 +159,28 @@ plt.style.use('ggplot')
 plt.title ("Spend, revenue simulation")
 sns.barplot(x = 'Date',
             y = 'values',
-            hue = 'type_group',
+            # hue = 'type_group',
             data = df_to_plot[df_to_plot.type_group == "renew"],
+            label='Renewal revenue',
             ax = ax)
-
 ax.axhline(
     y=daily_spend, 
     color='g',  
-    linestyle='dashed',  
-    linewidth=2  
+    linestyle='dashed',
+    linewidth=2,
+    label='Daily Spend' 
 )
-
+# old_handles, labels = ax.get_legend_handles_labels()
+# plt.legend(handles=old_handles)
 plt.xticks(rotation=90)
 plt.xlabel("Date")
 plt.ylabel("Revenue - Spend ($)")
+plt.legend()
 plt.tight_layout()
 
-
-
+#make tab
 tab1, tab2 = st.tabs(["📈 Chart", "🗃 Data"])
 tab1.subheader("Spend, revenue simulation")
 tab1.pyplot(fig)
 tab2.subheader("Data simulation")
 tab2.write(df_to_calculate)
-
