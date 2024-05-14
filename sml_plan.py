@@ -72,7 +72,7 @@ def define_renew(df, *retention_rates):
     for i, rr in enumerate(retention_rates, start=1):
         df[f"rr{i}"] = rr
         df[f"remaining_user_ after_rr{i}"] = rr * df["num_install"]
-        renew_offset = 10 if i == 1 else 10 + 7 * (i - 1)
+        renew_offset = 3 if i == 1 else 3 + 7 * (i - 1)
         df[f"renew_{i}_at"] = df["install_date"] + pd.Timedelta(days=renew_offset)
 
 
