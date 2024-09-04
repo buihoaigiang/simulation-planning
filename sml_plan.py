@@ -213,6 +213,12 @@ ax1.set_title('DAILY - Renewal Revenue vs Spend')
 
 sns.lineplot(x='Date', y='running_total', hue='type_group', data=df_running, ax=ax2)
 
+for i, row in df_filtered.iterrows():
+    if i % 7 == 0:
+        rounded_value = round(row['values'],0)
+        ax1.annotate(f"{rounded_value:.0f}", (row['Date'], row['values']), xytext=(5, 10),
+                     textcoords='offset points', fontsize=12, arrowprops=dict(facecolor='black', shrink=0.05))
+        
 target_date2 = pd.to_datetime(first_date_final2) 
  # Convert string to datetime
 ax2.axvline(
